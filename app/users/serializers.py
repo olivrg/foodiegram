@@ -47,3 +47,50 @@ class UserCreateSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+class UserUrlField(serializers.HyperlinkedIdentityField):
+    lookup_field = 'random_user_id'
+
+
+class UserFollowSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User 
+        fields = [
+            'random_user_id',
+            'username',
+            'followers',
+            'following',
+        ]
+
+class UserFollowersSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User 
+        fields = [
+            'random_user_id',
+            'username',
+        ]
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    url = UserUrlField(view_name='users:UserDetailAPIView')
+    username = serializers.CharField(read_only=True)
+    followers = UserFollowersSerializer(many=True)
+    following = UserFollowersSerializer(many=True)
+
+    class Meta:
+        model = User
+        fields = [
+            'url',
+            'random_user_id',
+            'username',
+            'email',
+            'name',
+            'is_active',
+            'is_staff',
+            'is_superuser',
+            'favourite_dish',
+            'profile_image',
+            'followers',
+            'following',
+        ]
