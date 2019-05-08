@@ -55,3 +55,34 @@ class UserListAPIView(generics.ListAPIView):
             return site_users
         else:
             return User.objects.filter(username=user.username)
+
+class UserDetailAPIView(mixins.DestroyModelMixin, mixins.UpdateModelMixin, generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = []
+
+    def put(self, request, *args, **kwargs):
+        random_user_id = self.kwargs.pop('random_user_id')
+        user = get_object_or_404(User, random_user_id=random_user_id)
+        if len(request.data) == 2:
+            user.profile_picture = request.data['profile_picture']
+            user.save()
+            return Response(HTTP_200_OK)
+
+        else:
+            user.name = request.data['name']
+            user.username = request.data['username']
+            user.email = request.data['email']
+            user.favourite_dish = request.data['favourite_dish']
+            user.save()
+            return Response(HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+    def get_object(self, *args, **kwargs):
+        random_user_id = self.kwargs.pop('random_user_id')
+        user = get_object_or_404(User, random_user_id=random_user_id)
+        tokens = AuthToken.objects.filter(user=user)
+        return user
