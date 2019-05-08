@@ -86,3 +86,20 @@ class UserDetailAPIView(mixins.DestroyModelMixin, mixins.UpdateModelMixin, gener
         user = get_object_or_404(User, random_user_id=random_user_id)
         tokens = AuthToken.objects.filter(user=user)
         return user
+
+class UserCreateAPIView(generics.CreateAPIView):
+    serializer_class = UserCreateSerializer
+    queryset = User.objects.all()
+    authentication_classes = []
+    permission_classes = []
+
+
+class LoggedInUserAPIView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    permission_classes = [IsOwnerOrSuperUser, IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+
+    def get_object(self, *args, **kwargs):
+        user = self.request.user
+        return user
