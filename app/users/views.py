@@ -103,3 +103,35 @@ class LoggedInUserAPIView(generics.RetrieveAPIView):
     def get_object(self, *args, **kwargs):
         user = self.request.user
         return user
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication, ])
+@permission_classes([IsAuthenticated, ])
+def update_password(request, *args, **kwargs):
+    user = get_object_or_404(User, username=request.data['username'])
+    current_password = request.data['current_password']
+    new_password = request.data['new_password']
+    if user.check_password(current_password):
+        user.set_password(new_password)
+        user.save()
+
+    else:
+        return Response({'error': 'Incorrect password'}, status=HTTP_400_BAD_REQUEST)
+    return Response({'message': 'Successfully updated password'}, status=200)
+
+
+@api_view(['POST'])
+@authentication_classes([])
+@permission_classes([])
+def reset_password(request, *args, **kwargs):
+    user = get_object_or_404(User, username=request.data['username'])
+    user_token = user.reset_password_token
+    post_token = request.data['token']
+    if post_token == user_token:
+        new_password = request.data['password']
+        user.set_password(new_password)
+        user.reset_password_token = ''
+        user.save()
+        return Response({'message': 'Your password has updated successfully'}, status=200)
+    else:
+        return Response({'error': 'This reset password url has expired'}, status=HTTP_400_BAD_REQUEST)
