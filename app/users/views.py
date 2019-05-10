@@ -135,3 +135,33 @@ def reset_password(request, *args, **kwargs):
         return Response({'message': 'Your password has updated successfully'}, status=200)
     else:
         return Response({'error': 'This reset password url has expired'}, status=HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@authentication_classes([])
+@permission_classes([])
+def forgot_password(request, *args, **kwargs):
+    username_or_email = request.data['user']
+    if len(User.objects.filter(username=username_or_email)) == 0:
+        if len(User.objects.filter(email=username_or_email)) == 0:
+            return Response({'error': 'No user with that username or email exists'}, status=HTTP_400_BAD_REQUEST)
+        else:
+            user = User.objects.filter(email=username_or_email)[0]
+    else:
+        user = User.objects.filter(username=username_or_email)[0]
+
+    reset_password_token = uuid4()
+    user.reset_password_token = reset_password_token
+    user.save()
+    subject = 'Reset your Password'
+    body_message = 'Click the following link in order to reset your password'
+    root_url = 'https://dashboard.foodiegram.com'
+    body = '%s: %s/reset-password/%s?token=%s' % (
+        body_message, root_url, user.username, reset_password_token)
+    send_mail(
+        subject,
+        body,
+        'support@foodiegram.com',
+        [user.email]
+    )
+    return Response({'message': 'Check your email for password reset instructions'}, status=200)
