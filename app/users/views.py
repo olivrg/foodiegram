@@ -165,3 +165,38 @@ def forgot_password(request, *args, **kwargs):
         [user.email]
     )
     return Response({'message': 'Check your email for password reset instructions'}, status=200)
+
+
+@api_view(['POST'])
+def validate_user_data(request):
+    values = request.data['values']
+    username = None
+    email = None
+    error = False
+    error_response = {}
+    print(values)
+    try:
+        username = values['username']
+        username = username.lower()
+    except:
+        pass
+    try:
+        email = values['email']
+        email = email.lower()
+    except:
+        pass
+    if username:
+        if User.objects.all().filter(username=username).exists():
+            error = True
+            error_response[
+                'username'] = 'The Username (' + username + ') Is Already In Use'
+    if email:
+        print(email)
+        if User.objects.all().filter(email=email).exists():
+            error = True
+            error_response[
+                'email'] = 'The Email (' + email + ') Is Already In Use'
+    if error:
+        raise ValidationError(error_response)
+    else:
+        return Response({"message": "Success"})
