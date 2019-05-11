@@ -167,6 +167,8 @@ def forgot_password(request, *args, **kwargs):
     return Response({'message': 'Check your email for password reset instructions'}, status=200)
 
 
+
+
 @api_view(['POST'])
 def validate_user_data(request):
     values = request.data['values']
@@ -200,3 +202,43 @@ def validate_user_data(request):
         raise ValidationError(error_response)
     else:
         return Response({"message": "Success"})
+
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication, ])
+@permission_classes([])
+def follow_create_api(request, *args, **kwargs):
+    serializer = UserFollowSerializer()
+    active_user = get_object_or_404(
+        User, random_user_id=request.data['random_user_id'])
+    followed_user = get_object_or_404(
+        User, random_user_id=request.data['followed_user_id'])
+    # add new user to list of active user's following
+    active_user.following.add(followed_user)
+    # add active_user to new user's list of followers
+    followed_user.followers.add(active_user)
+
+    # add notification
+
+    return Response(serializer.data, status=HTTP_200_OK)
+
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication, ])
+@permission_classes([])
+def follow_delete_api(request, *args, **kwargs):
+    serializer = UserFollowSerializer()
+    active_user = get_object_or_404(
+        User, random_user_id=request.data['random_user_id'])
+    followed_user = get_object_or_404(
+        User, random_user_id=request.data['followed_user_id'])
+    # delete new user from list of active user's following
+    active_user.following.remove(followed_user)
+    # delete active_user from new user's list of followers
+    followed_user.followers.remove(active_user)
+
+     # add notification
+     
+    return Response(serializer.data, status=HTTP_200_OK)
