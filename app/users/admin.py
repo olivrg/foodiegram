@@ -51,3 +51,62 @@ class UserChangeForm(forms.ModelForm):
 
     def clean_password(self):
         return self.initial['password']
+
+class UserAdmin(BaseUserAdmin):
+    # The forms to add and change user instances
+    form = UserChangeForm
+    add_form = UserCreationForm
+
+    # user model fields
+    list_display = ['email', 'username',
+                    'favourite_team', 'random_user_id', 'first_name', 'last_name',
+                    'is_staff', 'is_active'
+                    ]
+    read_only_fields = ('random_user_id',)
+    fieldsets = (
+        (None, {'fields': ('password',)}),
+        ('Personal Info', {'fields': (
+            'first_name',
+            'last_name',
+            'email',
+            'phone_number',
+            'gender',
+            'favourite_team',
+            'reset_password_token',
+
+        )}),
+        ('Site Info', {'fields': (
+            'username',
+            'profile_picture',
+            'following',
+            'followers',
+            'is_staff',
+            'is_active',
+            'is_superuser',
+            'groups',
+            'user_permissions',
+            'last_login',
+        )}),
+    )
+
+    # override get_fieldsets to use this attribute when creating a user
+    add_fieldsets = (
+        (None, {'fields': (
+            'username',
+            'password1',
+            'password2',
+        )}),
+        ('Personal Info', {'fields': (
+            'email',
+            'first_name',
+            'last_name'
+        )}),
+    )
+
+    search_fields = ('email',)
+    ordering = ('email',)
+    filter_horizontal = ()
+
+
+admin.site.register(User, UserAdmin)
+admin.site.unregister(Group)
