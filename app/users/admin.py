@@ -15,9 +15,9 @@ class UserCreationForm(forms.ModelForm):
         label='Password confirmation', widget=forms.PasswordInput)
 
     class Meta:
-        model = User 
+        model = User
         fields = ("email",)
-    
+
     def clean_password2(self):
         # check that the two password entries match
         password1 = self.cleaned_data.get("password1")
@@ -33,6 +33,7 @@ class UserCreationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
 
 class UserChangeForm(forms.ModelForm):
     """update users"""
@@ -52,6 +53,7 @@ class UserChangeForm(forms.ModelForm):
     def clean_password(self):
         return self.initial['password']
 
+
 class UserAdmin(BaseUserAdmin):
     # The forms to add and change user instances
     form = UserChangeForm
@@ -59,19 +61,18 @@ class UserAdmin(BaseUserAdmin):
 
     # user model fields
     list_display = ['email', 'username',
-                    'favourite_team', 'random_user_id', 'first_name', 'last_name',
+                    'favourite_dish', 'random_user_id', 'name',
                     'is_staff', 'is_active'
                     ]
     read_only_fields = ('random_user_id',)
     fieldsets = (
         (None, {'fields': ('password',)}),
         ('Personal Info', {'fields': (
-            'first_name',
-            'last_name',
+            'name',
             'email',
             'phone_number',
             'gender',
-            'favourite_team',
+            'favourite_dish',
             'reset_password_token',
 
         )}),
@@ -98,8 +99,7 @@ class UserAdmin(BaseUserAdmin):
         )}),
         ('Personal Info', {'fields': (
             'email',
-            'first_name',
-            'last_name'
+            'name',
         )}),
     )
 
