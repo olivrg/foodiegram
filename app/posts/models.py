@@ -37,6 +37,14 @@ class Post(models.Model):
 
 # comments
 class Comment(models.Model):
+    random_comment_id = models.CharField(
+        'Random Comment Id',
+        editable=False,
+        max_length=32,
+        default=helper.random_id,
+        unique=True,
+        primary_key=True
+    )
     post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='post_comments')
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_comments')
     content = models.CharField(max_length=255)
@@ -50,3 +58,19 @@ class Comment(models.Model):
 
 
 # report post
+class Report(models.Model):
+    random_report_id = models.CharField(
+        'Random Report Id',
+        editable=False,
+        max_length=32,
+        default=helper.random_id,
+        unique=True,
+        primary_key=True
+    )
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    message = models.CharField(max_length=120, blank=True, null=True,)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+
+    def __unicode__(self):
+        return str(self.random_report_id)

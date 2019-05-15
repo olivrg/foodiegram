@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from posts.models import Comment, Post
+from posts.models import Comment, Post, Report
 
 
 class PostModelAdmin(admin.ModelAdmin):
@@ -27,3 +27,14 @@ class CommentModelAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Comment, CommentModelAdmin)
+
+class ReportModelAdmin(admin.ModelAdmin):
+    list_display = ["message", "user", "timestamp"]
+
+    search_fields = ["user", "message"]
+
+    class Meta:
+        model = Report
+
+
+admin.site.register(Report, ReportModelAdmin)
