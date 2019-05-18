@@ -30,3 +30,20 @@ def like_create_api(request, *args, **kwargs):
     likee = get_object_or_404(User, random_user_id=post.user.random_user_id)
 
     return Response(serializer.data, status=HTTP_200_OK)
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication, ])
+@permission_classes([])
+def like_delete_api(request, *args, **kwargs):
+    serializer = PostLikesSerializer()
+    post = get_object_or_404(
+        Post, random_post_id=request.data['random_post_id'])
+    user = get_object_or_404(
+        User, random_user_id=request.data['random_user_id'])
+    post.likes.remove(user)
+
+    liker = user
+    likee = get_object_or_404(User, random_user_id=post.user.random_user_id)
+
+    return Response(serializer.data, status=HTTP_200_OK)
