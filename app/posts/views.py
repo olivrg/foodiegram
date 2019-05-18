@@ -47,3 +47,18 @@ def like_delete_api(request, *args, **kwargs):
     likee = get_object_or_404(User, random_user_id=post.user.random_user_id)
 
     return Response(serializer.data, status=HTTP_200_OK)
+
+
+class PostListAPIView(generics.ListAPIView):
+    serializer_class = PostSerializer 
+    queryset = Post.objects.all()
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = []
+    filter_class = PostFilter 
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,
+                       filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('owner')
+
+    def get_queryset(self):
+        post = Post.objects.all().order_by('timestamp')
+        return posts
