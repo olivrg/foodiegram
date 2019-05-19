@@ -62,3 +62,24 @@ class PostListAPIView(generics.ListAPIView):
     def get_queryset(self):
         post = Post.objects.all().order_by('timestamp')
         return posts
+
+class PostDetailAPIView(mixins.DestroyModelMixin, mixins.UpdateModelMixin, generics.RetrieveAPIView):
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = []
+
+    def put(self, request, *args, **kwargs):
+        random_post_id = self.kwargs.pop('random_post_id')
+        post = get_object_or_404(Post, random_post_id=random_post_id)
+        post.caption = request.data['caption']
+        post.save()
+        return Response(HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+    def get_object(self, *args, **kwargs):
+        random_post_id = self.kwargs.pop('random_post_id')
+        post = get_object_or_404(Post, random_post_id=random_post_id)
+        return post
