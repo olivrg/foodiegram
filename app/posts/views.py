@@ -83,3 +83,10 @@ class PostDetailAPIView(mixins.DestroyModelMixin, mixins.UpdateModelMixin, gener
         random_post_id = self.kwargs.pop('random_post_id')
         post = get_object_or_404(Post, random_post_id=random_post_id)
         return post
+
+
+class PostCreateAPIView(generics.CreateAPIView):
+    serializer_class = PostCreateSerializer
+    queryset = Post.objects.all()
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = []
