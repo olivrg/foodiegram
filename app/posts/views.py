@@ -90,3 +90,50 @@ class PostCreateAPIView(generics.CreateAPIView):
     queryset = Post.objects.all()
     authentication_classes = [TokenAuthentication, ]
     permission_classes = []
+
+
+class ReportListAPIView(generics.ListAPIView):
+    serializer_class = ReportSerializer
+    queryset = Report.objects.all()
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = []
+
+    def get_queryset(self):
+        reports = Report.objects.all().order_by('-timestamp')
+        return reports
+
+
+class ReportDetailAPIView(mixins.DestroyModelMixin, mixins.UpdateModelMixin, generics.RetrieveAPIView):
+    serializer_class = ReportSerializer
+    queryset = Report.objects.all()
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = []
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+    def get_object(self, *args, **kwargs):
+        random_report_id = self.kwargs.pop('random_report_id')
+        report = get_object_or_404(Report, random_report_id=random_report_id)
+        return report
+
+
+class ReportCreateAPIView(generics.CreateAPIView):
+    serializer_class = ReportSerializer
+    queryset = Report.objects.all()
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = []
+
+    def create(self, request, *args, **kwargs):
+        random_post_id = self.kwargs.pop('random_post_id')
+        post = get_object_or_404(Post, random_post_id=random_post_id)
+        user = get_object_or_404(User, random_user_id=request.data['user'])
+        message = request.data['message']
+        report = Report.objects.create(
+            post=post,
+            user=user,
+            message=message,
+        )
+        report.save()
+
+        return Response(HTTP_200_OK)
