@@ -92,6 +92,16 @@ class PostCreateAPIView(generics.CreateAPIView):
     permission_classes = []
 
 
+class CommentListAPIView(generics.ListAPIView):
+    serializer_class = CommentSerializer
+    queryset = Comment.objects.all()
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = []
+
+    def get_queryset(self):
+        comments = Comment.objects.all().order_by('-timestamp')
+        return comments
+        
 class ReportListAPIView(generics.ListAPIView):
     serializer_class = ReportSerializer
     queryset = Report.objects.all()
