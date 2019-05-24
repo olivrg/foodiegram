@@ -126,6 +126,13 @@ class CommentDetailAPIView(mixins.DestroyModelMixin, mixins.UpdateModelMixin, ge
         return comment
 
 
+class CommentCreateAPIView(generics.CreateAPIView):
+    serializer_class = CommentCreateSerializer
+    queryset = Comment.objects.all()
+    authentication_classes = [TokenAuthentication, ]
+    permission_classes = []
+
+
 class ReportListAPIView(generics.ListAPIView):
     serializer_class = ReportSerializer
     queryset = Report.objects.all()
