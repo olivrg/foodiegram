@@ -91,48 +91,6 @@ class PostCreateAPIView(generics.CreateAPIView):
     authentication_classes = [TokenAuthentication, ]
     permission_classes = []
 
-
-class CommentListAPIView(generics.ListAPIView):
-    serializer_class = CommentSerializer
-    queryset = Comment.objects.all()
-    authentication_classes = [TokenAuthentication, ]
-    permission_classes = []
-    search_fields = ('owner')
-
-    def get_queryset(self):
-        comments = Comment.objects.all().order_by('-timestamp')
-        return comments
-
-
-class CommentDetailAPIView(mixins.DestroyModelMixin, mixins.UpdateModelMixin, generics.RetrieveAPIView):
-    serializer_class = CommentSerializer
-    queryset = Comment.objects.all()
-    authentication_classes = [TokenAuthentication, ]
-    permission_classes = []
-
-    def put(self, request, *args, **kwargs):
-        random_comment_id = self.kwargs.pop('random_comment_id')
-        comment = get_object_or_404(Comment, random_comment_id=random_comment_id)
-        comment.content = request.data['content']
-        comment.save()
-        return Response(HTTP_200_OK)
-
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
-
-    def get_object(self, *args, **kwargs):
-        random_comment_id = self.kwargs.pop('random_comment_id')
-        comment = get_object_or_404(Comment, random_comment_id=random_comment_id)
-        return comment
-
-
-class CommentCreateAPIView(generics.CreateAPIView):
-    serializer_class = CommentCreateSerializer
-    queryset = Comment.objects.all()
-    authentication_classes = [TokenAuthentication, ]
-    permission_classes = []
-
-
 class ReportListAPIView(generics.ListAPIView):
     serializer_class = ReportSerializer
     queryset = Report.objects.all()
