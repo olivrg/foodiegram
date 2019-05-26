@@ -17,17 +17,6 @@ class PostModelAdmin(admin.ModelAdmin):
 
 admin.site.register(Post, PostModelAdmin)
 
-class CommentModelAdmin(admin.ModelAdmin):
-    list_display = ["content", "owner", "timestamp"]
-
-    search_fields = ["owner", "content"]
-
-    class Meta:
-        model = Comment
-
-
-admin.site.register(Comment, CommentModelAdmin)
-
 class ReportModelAdmin(admin.ModelAdmin):
     list_display = ["message", "user", "timestamp"]
 
