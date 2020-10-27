@@ -7,7 +7,7 @@ boto==2.48.0
 cffi==1.11.4
 chardet==3.0.4
 contextlib2==0.5.5
-cryptography==2.1.4
+cryptography==3.2
 dj-database-url==0.4.2
 django-allauth==0.34.0
 django-cors-headers==2.2.0
